@@ -2,7 +2,7 @@
 
 import enum
 import collections
-from typing import NamedTuple, Optional
+from typing import NamedTuple, Optional, Union, List
 
 from mpl_events import MplEventDispatcher, MplObject_Type
 
@@ -50,6 +50,9 @@ class Key(NamedTuple):
     key: str
     modifier: KeyModifier
 
+    def has_modifier(self) -> bool:
+        return self.modifier != KeyModifier.NO
+
 
 class InteractorBase(MplEventDispatcher):
     """The base class for all interactors
@@ -83,3 +86,21 @@ class InteractorBase(MplEventDispatcher):
                 break
 
         return Key(key=key, modifier=modifiers[modifier])
+
+    def check_key(self, key: Union[str, Key], key_set: List[str],
+                  modifier: Optional[KeyModifier] = None):
+        if isinstance(key, str):
+            key = self.parse_key(key)
+
+        k_ok = False
+        m_ok = True
+
+        for k in key_set:
+            if k == key.key:
+                k_ok = True
+                break
+
+        if modifier is not None:
+            m_ok = key.modifier == modifier
+
+        return k_ok and m_ok

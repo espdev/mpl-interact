@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from mpl_events import mpl
-from ._base import InteractorBase
+from ._base import InteractorBase, KeyModifier
 
 
 class AxesLimitsResetInteractor(InteractorBase):
 
-    key = 'h'
+    keys = ['h', 'home']
 
     def reset_axes_limits(self, axes: mpl.Axes):
         """Resets limits for given axes
@@ -26,5 +26,7 @@ class AxesLimitsResetInteractor(InteractorBase):
             self.reset_axes_limits(event.inaxes)
 
     def on_key_release(self, event: mpl.KeyEvent):
-        if event.key == self.key:
+        key = self.parse_key(event.key)
+
+        if self.check_key(key, self.keys, KeyModifier.NO):
             self.reset_axes_limits(event.inaxes)

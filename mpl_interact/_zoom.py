@@ -171,26 +171,22 @@ class KeyZoomInteractor(ZoomInteractorBase):
 
         key = self.parse_key(key)
 
-        if self._check_key(key.key, self.zoom_plus_keys):
+        if key.modifier == KeyModifier.CTRL | KeyModifier.ALT:
+            return
+
+        if self.check_key(key, self.zoom_plus_keys):
             step = self.step
-        elif self._check_key(key.key, self.zoom_minus_keys):
+        elif self.check_key(key, self.zoom_minus_keys):
             step = -self.step
         else:
             return
+
+        axis = AxisType.ALL
 
         if key.modifier == self.x_modifier:
             axis = AxisType.X
         elif key.modifier == self.y_modifier:
             axis = AxisType.Y
-        else:
-            axis = AxisType.ALL
 
         if self.zoomer.zoom(event, axis, step):
             self.update()
-
-    @staticmethod
-    def _check_key(key, key_set):
-        for k in key_set:
-            if k == key:
-                return True
-        return False
