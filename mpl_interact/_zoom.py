@@ -6,7 +6,7 @@ from typing import Optional
 
 from mpl_events import mpl, MplObject_Type
 
-from ._base import InteractorBase, AxisType
+from ._base import InteractorBase, AxisType, KeyModifier
 
 
 class AxesZoomable(abc.ABC):
@@ -160,24 +160,27 @@ class KeyZoomInteractor(ZoomInteractorBase):
 
     zoom_plus_keys = ['p', '=']
     zoom_minus_keys = ['m', '-']
-    x_modifier = 'ctrl+'
-    y_modifier = 'alt+'
+    x_modifier = KeyModifier.CTRL
+    y_modifier = KeyModifier.ALT
 
     def on_key_press(self, event: mpl.KeyEvent):
         key = event.key
 
-        if self._check_key(key, self.zoom_plus_keys):
+        if not key:
+            return
+
+        key = self.parse_key(key)
+
+        if self._check_key(key.key, self.zoom_plus_keys):
             step = self.step
-        elif self._check_key(key, self.zoom_minus_keys):
+        elif self._check_key(key.key, self.zoom_minus_keys):
             step = -self.step
         else:
             return
 
-        allowed_keys = self.zoom_plus_keys + self.zoom_minus_keys
-
-        if self._check_key_modifier(key, self.x_modifier, allowed_keys):
+        if key.modifier == self.x_modifier:
             axis = AxisType.X
-        elif self._check_key_modifier(key, self.y_modifier, allowed_keys):
+        elif key.modifier == self.y_modifier:
             axis = AxisType.Y
         else:
             axis = AxisType.ALL
@@ -188,13 +191,6 @@ class KeyZoomInteractor(ZoomInteractorBase):
     @staticmethod
     def _check_key(key, key_set):
         for k in key_set:
-            if k in key:
-                return True
-        return False
-
-    @staticmethod
-    def _check_key_modifier(key, modifier, key_set):
-        for k in key_set:
-            if modifier + k == key:
+            if k == key:
                 return True
         return False

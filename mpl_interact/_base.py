@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import enum
+import collections
 from typing import NamedTuple, Optional
 
 from mpl_events import MplEventDispatcher, MplObject_Type
@@ -19,6 +20,8 @@ class LocationCoords(NamedTuple):
 
 
 class MouseButton(enum.Enum):
+    """
+    """
     ANY = 0
     LEFT = 1
     WHEEL = 2
@@ -26,9 +29,26 @@ class MouseButton(enum.Enum):
 
 
 class AxisType(enum.Enum):
+    """
+    """
     X = 'x'
     Y = 'y'
     ALL = 'xy'
+
+
+class KeyModifier(enum.Flag):
+    """
+    """
+    NO = 0
+    CTRL = 2
+    ALT = 4
+
+
+class Key(NamedTuple):
+    """
+    """
+    key: str
+    modifier: KeyModifier
 
 
 class InteractorBase(MplEventDispatcher):
@@ -42,3 +62,24 @@ class InteractorBase(MplEventDispatcher):
         """Updates and redraw canvas
         """
         self.figure.canvas.draw()
+
+    @staticmethod
+    def parse_key(key: str) -> Key:
+        """Parses key string that comes from mpl KeyEvent
+        """
+        modifiers = collections.OrderedDict([
+            ('ctrl+alt+', KeyModifier.CTRL | KeyModifier.ALT),
+            ('ctrl+', KeyModifier.CTRL),
+            ('alt+', KeyModifier.ALT),
+            ('_none', KeyModifier.NO),
+        ])
+
+        modifier = '_none'
+
+        for m in modifiers:
+            if m in key:
+                key = key.replace(m, '')
+                modifier = m
+                break
+
+        return Key(key=key, modifier=modifiers[modifier])
