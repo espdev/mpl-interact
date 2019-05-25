@@ -40,17 +40,19 @@ class ZoomInteractor(InteractorBase):
         self._wheel_zoom_inversion = value
 
     def on_mouse_wheel_scroll(self, event: mpl.MouseEvent):
-        if self.in_axes:
+        axes: mpl.Axes = event.inaxes
+        if axes and axes.in_axes(event) and axes.can_zoom():
             self._zoom(event)
+            self.update()
 
     def _zoom(self, event: mpl.MouseEvent):
-        axes = self.in_axes
+        axes = event.inaxes
+
+        anchor_x = event.xdata
+        anchor_y = event.ydata
 
         xmin, xmax = axes.get_xlim()
         ymin, ymax = axes.get_ylim()
-
-        anchor_x = self.data_coords.x
-        anchor_y = self.data_coords.y
 
         if self.wheel_zoom_inversion:
             step = -event.step
@@ -72,8 +74,6 @@ class ZoomInteractor(InteractorBase):
 
         axes.set_xlim(xmin, xmax)
         axes.set_ylim(ymin, ymax)
-
-        self.update()
 
     @staticmethod
     def _recalc_axis_limits(lim_min, lim_max, anchor, zoom_step, is_log):

@@ -4,15 +4,11 @@ from mpl_events import mpl
 from ._base import InteractorBase
 
 
-class AxesLimitsRestoreInteractor(InteractorBase):
+class AxesLimitsResetInteractor(InteractorBase):
 
-    def restore_axes_limits(self, axes: mpl.Axes = None):
-        """Restores limits for given axes
-
-        If axes is not set will be used current axes (in_axes)
+    def reset_axes_limits(self, axes: mpl.Axes):
+        """Resets limits for given axes
         """
-        if not axes:
-            axes = self.in_axes
         if not axes:
             return
 
@@ -25,4 +21,4 @@ class AxesLimitsRestoreInteractor(InteractorBase):
 
     def on_mouse_button_press(self, event: mpl.MouseEvent):
         if event.dblclick:
-            self.restore_axes_limits()
+            self.reset_axes_limits(event.inaxes)
