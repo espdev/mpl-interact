@@ -30,9 +30,6 @@ class AxesMousePanDragger(AxesDraggable):
         self._axes: Optional[mpl.Axes] = None
 
     def begin(self, event: mpl.MouseEvent):
-        if event.button != MouseButton.LEFT:
-            return
-
         axes = event.inaxes
 
         if axes and axes.in_axes(event) and axes.can_pan():
@@ -58,11 +55,24 @@ class DragInteractor(InteractorBase):
     def __init__(self, mpl_obj: MplObject_Type, dragger: Optional[AxesDraggable] = None):
         super().__init__(mpl_obj)
 
+        self._button = MouseButton.LEFT
+
         if not dragger:
             dragger = AxesMousePanDragger()
         self._dragger = dragger
 
+    @property
+    def button(self) -> MouseButton:
+        return self._button
+
+    @button.setter
+    def button(self, value: MouseButton):
+        self._button = MouseButton(value)
+
     def on_mouse_button_press(self, event: mpl.MouseEvent):
+        button = MouseButton(event.button)
+        if self.button != MouseButton.ANY and button != self.button:
+            return
         self._dragger.begin(event)
 
     def on_mouse_button_release(self, event: mpl.MouseEvent):

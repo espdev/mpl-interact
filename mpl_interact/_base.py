@@ -4,7 +4,6 @@ import enum
 from typing import NamedTuple, Optional
 
 from mpl_events import MplEventDispatcher, MplObject_Type
-from mpl_events import mpl
 
 
 class LocationCoords(NamedTuple):
@@ -19,10 +18,11 @@ class LocationCoords(NamedTuple):
         return LocationCoords(x=None, y=None)
 
 
-class MouseButton(enum.IntEnum):
+class MouseButton(enum.Enum):
+    ANY = 0
     LEFT = 1
-    RIGHT = 2
-    WHEEL = 3
+    WHEEL = 2
+    RIGHT = 3
 
 
 class AxisType(enum.Enum):
