@@ -13,6 +13,12 @@ class AxesZoomable(abc.ABC):
     """Axes zoomable interface
     """
 
+    def begin(self, event: mpl.MouseEvent):
+        pass
+
+    def end(self, event: mpl.MouseEvent):
+        pass
+
     def zoom(self, event: mpl.MouseEvent, step: float, inversion: bool) -> bool:
         """This method should implement zooming
         """
@@ -25,6 +31,12 @@ class AxesMouseAnchorZoomer(AxesZoomable):
     Performs zoom with anchor in current mouse cursor position.
     In this way you scale what you are looking at.
     """
+
+    def begin(self, event: mpl.MouseEvent):
+        pass
+
+    def end(self, event: mpl.MouseEvent):
+        pass
 
     def zoom(self, event: mpl.MouseEvent, step: float, inversion: bool) -> bool:
         axes: mpl.Axes = event.inaxes
