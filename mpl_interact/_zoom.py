@@ -158,7 +158,7 @@ class KeyZoomInteractor(ZoomInteractorBase):
 
     disable_default_handlers = True
 
-    zoom_plus_keys = ['p', '=']
+    zoom_plus_keys = ['p', '=', '+']
     zoom_minus_keys = ['m', '-']
     x_modifier = KeyModifier.CTRL
     y_modifier = KeyModifier.ALT
