@@ -6,6 +6,8 @@ from ._base import InteractorBase
 
 class AxesLimitsResetInteractor(InteractorBase):
 
+    key = 'h'
+
     def reset_axes_limits(self, axes: mpl.Axes):
         """Resets limits for given axes
         """
@@ -21,4 +23,8 @@ class AxesLimitsResetInteractor(InteractorBase):
 
     def on_mouse_button_press(self, event: mpl.MouseEvent):
         if event.dblclick:
+            self.reset_axes_limits(event.inaxes)
+
+    def on_key_release(self, event: mpl.KeyEvent):
+        if event.key == self.key:
             self.reset_axes_limits(event.inaxes)
