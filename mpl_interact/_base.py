@@ -25,9 +25,17 @@ class MouseButton(enum.IntEnum):
     WHEEL = 3
 
 
+class AxisType(enum.Enum):
+    X = 'x'
+    Y = 'y'
+    ALL = 'xy'
+
+
 class InteractorBase(MplEventDispatcher):
     """The base class for all interactors
     """
+
+    disable_default_handlers = True
 
     def __init__(self, mpl_obj: MplObject_Type):
         super().__init__(mpl_obj, connect=True)

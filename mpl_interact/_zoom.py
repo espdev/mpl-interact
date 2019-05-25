@@ -6,39 +6,39 @@ from typing import Optional
 
 from mpl_events import mpl, MplObject_Type
 
-from ._base import InteractorBase
+from ._base import InteractorBase, AxisType
 
 
 class AxesZoomable(abc.ABC):
     """Axes zoomable interface
     """
 
-    def begin(self, event: mpl.MouseEvent):
+    def begin(self, event: mpl.LocationEvent):
         pass
 
-    def end(self, event: mpl.MouseEvent):
+    def end(self, event: mpl.LocationEvent):
         pass
 
-    def zoom(self, event: mpl.MouseEvent, step: float, inversion: bool) -> bool:
+    def zoom(self, event: mpl.LocationEvent, axis: AxisType, step: float) -> bool:
         """This method should implement zooming
         """
         pass
 
 
-class AxesMouseAnchorZoomer(AxesZoomable):
+class MouseAnchorAxesZoomer(AxesZoomable):
     """Zooming axes according to mouse cursor position
 
     Performs zoom with anchor in current mouse cursor position.
     In this way you scale what you are looking at.
     """
 
-    def begin(self, event: mpl.MouseEvent):
+    def begin(self, event: mpl.LocationEvent):
         pass
 
-    def end(self, event: mpl.MouseEvent):
+    def end(self, event: mpl.LocationEvent):
         pass
 
-    def zoom(self, event: mpl.MouseEvent, step: float, inversion: bool) -> bool:
+    def zoom(self, event: mpl.LocationEvent, axis: AxisType, step: float) -> bool:
         axes: mpl.Axes = event.inaxes
 
         if not axes or not axes.in_axes(event) or not axes.can_zoom():
@@ -50,19 +50,16 @@ class AxesMouseAnchorZoomer(AxesZoomable):
         xmin, xmax = axes.get_xlim()
         ymin, ymax = axes.get_ylim()
 
-        wheel_step = -event.step if inversion else event.step
-        zoom_step = wheel_step * step
-
         is_xlog = axes.get_xscale() == 'log'
         is_ylog = axes.get_yscale() == 'log'
 
-        if event.key == 'x':
-            xmin, xmax = self._recalc_axis_limits(xmin, xmax, anchor_x, zoom_step, is_xlog)
-        elif event.key == 'y':
-            ymin, ymax = self._recalc_axis_limits(ymin, ymax, anchor_y, zoom_step, is_ylog)
-        else:
-            xmin, xmax = self._recalc_axis_limits(xmin, xmax, anchor_x, zoom_step, is_xlog)
-            ymin, ymax = self._recalc_axis_limits(ymin, ymax, anchor_y, zoom_step, is_ylog)
+        if axis == AxisType.X:
+            xmin, xmax = self._recalc_axis_limits(xmin, xmax, anchor_x, step, is_xlog)
+        elif axis == AxisType.Y:
+            ymin, ymax = self._recalc_axis_limits(ymin, ymax, anchor_y, step, is_ylog)
+        elif axis == AxisType.ALL:
+            xmin, xmax = self._recalc_axis_limits(xmin, xmax, anchor_x, step, is_xlog)
+            ymin, ymax = self._recalc_axis_limits(ymin, ymax, anchor_y, step, is_ylog)
 
         axes.set_xlim(xmin, xmax)
         axes.set_ylim(ymin, ymax)
@@ -82,8 +79,8 @@ class AxesMouseAnchorZoomer(AxesZoomable):
         ra = abs(lim_min - anchor)
         rb = abs(lim_max - anchor)
 
-        lim_min = lim_min - ra * zoom_step
-        lim_max = lim_max + rb * zoom_step
+        lim_min = lim_min + ra * zoom_step
+        lim_max = lim_max - rb * zoom_step
 
         if lim_min > lim_max:
             lim_min, lim_max = lim_max, lim_min
@@ -95,23 +92,22 @@ class AxesMouseAnchorZoomer(AxesZoomable):
         return lim_min, lim_max
 
 
-class ZoomInteractor(InteractorBase):
-    """The interactor for zooming data
-
-    The interactor scales data on axes via mouse wheel scrolling with anchor in
-    current mouse cursor position. In this way you scale what you are looking at.
-
+class ZoomInteractorBase(InteractorBase):
+    """The base interactor for zooming data on axes
     """
 
     def __init__(self, mpl_obj: MplObject_Type, zoomer: Optional[AxesZoomable] = None):
         super().__init__(mpl_obj)
 
         self._step = 0.2
-        self._inversion = False
 
         if not zoomer:
-            zoomer = AxesMouseAnchorZoomer()
+            zoomer = MouseAnchorAxesZoomer()
         self._zoomer = zoomer
+
+    @property
+    def zoomer(self) -> AxesZoomable:
+        return self._zoomer
 
     @property
     def step(self) -> float:
@@ -124,6 +120,16 @@ class ZoomInteractor(InteractorBase):
         else:
             raise ValueError('Zoom step value must be greater than zero')
 
+
+class WheelScrollZoomInteractor(ZoomInteractorBase):
+    """The mouse wheel scroll interactor for zooming data on axes
+    """
+
+    def __init__(self, mpl_obj: MplObject_Type, zoomer: Optional[AxesZoomable] = None):
+        super().__init__(mpl_obj)
+
+        self._inversion = True
+
     @property
     def inversion(self) -> bool:
         return self._inversion
@@ -133,5 +139,38 @@ class ZoomInteractor(InteractorBase):
         self._inversion = value
 
     def on_mouse_wheel_scroll(self, event: mpl.MouseEvent):
-        if self._zoomer.zoom(event, self.step, self.inversion):
+        axis = AxisType.ALL
+        if event.key == 'x':
+            axis = AxisType.X
+        if event.key == 'y':
+            axis = AxisType.Y
+
+        step = self.step * event.step
+        step = -step if self.inversion else step
+
+        if self.zoomer.zoom(event, axis, step):
+            self.update()
+
+
+class KeyZoomInteractor(ZoomInteractorBase):
+
+    def on_key_press(self, event: mpl.KeyEvent):
+        key = event.key
+        axis = AxisType.ALL
+
+        if 'ctrl+alt' in key:
+            return
+        elif 'ctrl' in key:
+            axis = AxisType.X
+        elif 'alt' in key:
+            axis = AxisType.Y
+
+        if 'p' in key or '=' in key:
+            step = self.step
+        elif 'm' in key or '-' in key:
+            step = -self.step
+        else:
+            return
+
+        if self.zoomer.zoom(event, axis, step):
             self.update()
