@@ -153,24 +153,48 @@ class WheelScrollZoomInteractor(ZoomInteractorBase):
 
 
 class KeyZoomInteractor(ZoomInteractorBase):
+    """Keyboard based zoom interactor
+    """
+
+    disable_default_handlers = True
+
+    zoom_plus_keys = ['p', '=']
+    zoom_minus_keys = ['m', '-']
+    x_modifier = 'ctrl+'
+    y_modifier = 'alt+'
 
     def on_key_press(self, event: mpl.KeyEvent):
         key = event.key
-        axis = AxisType.ALL
 
-        if 'ctrl+alt' in key:
-            return
-        elif 'ctrl' in key:
-            axis = AxisType.X
-        elif 'alt' in key:
-            axis = AxisType.Y
-
-        if 'p' in key or '=' in key:
+        if self._check_key(key, self.zoom_plus_keys):
             step = self.step
-        elif 'm' in key or '-' in key:
+        elif self._check_key(key, self.zoom_minus_keys):
             step = -self.step
         else:
             return
 
+        allowed_keys = self.zoom_plus_keys + self.zoom_minus_keys
+
+        if self._check_key_modifier(key, self.x_modifier, allowed_keys):
+            axis = AxisType.X
+        elif self._check_key_modifier(key, self.y_modifier, allowed_keys):
+            axis = AxisType.Y
+        else:
+            axis = AxisType.ALL
+
         if self.zoomer.zoom(event, axis, step):
             self.update()
+
+    @staticmethod
+    def _check_key(key, key_set):
+        for k in key_set:
+            if k in key:
+                return True
+        return False
+
+    @staticmethod
+    def _check_key_modifier(key, modifier, key_set):
+        for k in key_set:
+            if modifier + k == key:
+                return True
+        return False

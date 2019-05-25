@@ -35,8 +35,6 @@ class InteractorBase(MplEventDispatcher):
     """The base class for all interactors
     """
 
-    disable_default_handlers = True
-
     def __init__(self, mpl_obj: MplObject_Type):
         super().__init__(mpl_obj, connect=True)
 
