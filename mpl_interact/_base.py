@@ -47,8 +47,11 @@ class KeyModifier(enum.Flag):
 class Key(NamedTuple):
     """
     """
-    key: str
+    key: Optional[str]
     modifier: KeyModifier
+
+    def __bool__(self) -> bool:
+        return bool(self.key)
 
     def has_modifier(self) -> bool:
         return self.modifier != KeyModifier.NO
@@ -70,6 +73,9 @@ class InteractorBase(MplEventDispatcher):
     def parse_key(key: str) -> Key:
         """Parses key string that comes from mpl KeyEvent
         """
+        if not key:
+            return Key(key=None, modifier=KeyModifier.NO)
+
         modifiers = collections.OrderedDict([
             ('ctrl+alt+', KeyModifier.CTRL | KeyModifier.ALT),
             ('ctrl+', KeyModifier.CTRL),

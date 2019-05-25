@@ -164,14 +164,9 @@ class KeyZoomInteractor(ZoomInteractorBase):
     y_modifier = KeyModifier.ALT
 
     def on_key_press(self, event: mpl.KeyEvent):
-        key = event.key
+        key = self.parse_key(event.key)
 
-        if not key:
-            return
-
-        key = self.parse_key(key)
-
-        if key.modifier == KeyModifier.CTRL | KeyModifier.ALT:
+        if not key or key.modifier == KeyModifier.CTRL | KeyModifier.ALT:
             return
 
         if self.check_key(key, self.zoom_plus_keys):
