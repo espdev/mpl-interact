@@ -130,6 +130,9 @@ class MouseWheelScrollZoomInteractor(ZoomInteractorBase):
     """The mouse wheel scroll interactor for zooming data on axes
     """
 
+    x_keys = ['x', 'X']
+    y_keys = ['y', 'Y']
+
     def __init__(self, mpl_obj: MplObject_Type, zoomer: Optional[AxesZoomable] = None):
         super().__init__(mpl_obj, zoomer)
 
@@ -150,9 +153,9 @@ class MouseWheelScrollZoomInteractor(ZoomInteractorBase):
         axis = AxisType.ALL
         key = self.parse_key(event.key)
 
-        if self.check_key(key, ['x', 'X'], KeyModifier.NO):
+        if self.check_key(key, self.x_keys, KeyModifier.NO):
             axis = AxisType.X
-        if self.check_key(key, ['y', 'Y'], KeyModifier.NO):
+        if self.check_key(key, self.y_keys, KeyModifier.NO):
             axis = AxisType.Y
 
         if self.zoomer.zoom(event, step, axis):
