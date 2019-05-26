@@ -126,7 +126,7 @@ class ZoomInteractorBase(InteractorBase):
             raise ValueError('Zoom step value must be greater than zero')
 
 
-class WheelScrollZoomInteractor(ZoomInteractorBase):
+class MouseWheelScrollZoomInteractor(ZoomInteractorBase):
     """The mouse wheel scroll interactor for zooming data on axes
     """
 
