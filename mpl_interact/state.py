@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from mpl_events import mpl
-from ._base import InteractorBase, KeyModifier
+from .base import InteractorBase, KeyModifier
 
 
 class AxesLimitsResetInteractor(InteractorBase):

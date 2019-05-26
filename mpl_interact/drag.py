@@ -5,7 +5,7 @@ from typing import Optional
 
 from mpl_events import MplObject_Type, mpl
 
-from ._base import InteractorBase, MouseButton
+from .base import InteractorBase, MouseButton
 
 
 class AxesDraggable(abc.ABC):

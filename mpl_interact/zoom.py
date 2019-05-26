@@ -11,7 +11,7 @@ from typing import Optional
 
 from mpl_events import mpl, MplObject_Type
 
-from ._base import InteractorBase, AxisType, KeyModifier
+from .base import InteractorBase, AxisType, KeyModifier
 
 
 class AxesZoomable(abc.ABC):
