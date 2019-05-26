@@ -24,7 +24,7 @@ class MouseButton(enum.Enum):
     """
     ANY = 0
     LEFT = 1
-    WHEEL = 2
+    MIDDLE = 2
     RIGHT = 3
 
 
