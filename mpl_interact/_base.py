@@ -95,20 +95,14 @@ class InteractorBase(MplEventDispatcher):
 
     def check_key(self, key: Union[str, Key], key_set: List[str],
                   modifier: Optional[KeyModifier] = None):
+        """Checks the key for given set of keys and optionally modifier
+        """
         if not isinstance(key, Key):
             key = self.parse_key(key)
         if not key:
             return False
 
-        k_ok = False
-        m_ok = True
-
-        for k in key_set:
-            if k == key.key:
-                k_ok = True
-                break
-
-        if modifier is not None:
-            m_ok = key.modifier == modifier
+        k_ok = key.key in key_set
+        m_ok = True if modifier is None else key.modifier == modifier
 
         return k_ok and m_ok
