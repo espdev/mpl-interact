@@ -140,9 +140,11 @@ class WheelScrollZoomInteractor(ZoomInteractorBase):
 
     def on_mouse_wheel_scroll(self, event: mpl.MouseEvent):
         axis = AxisType.ALL
-        if event.key == 'x':
+        key = self.parse_key(event.key)
+
+        if self.check_key(key, ['x', 'X'], KeyModifier.NO):
             axis = AxisType.X
-        if event.key == 'y':
+        if self.check_key(key, ['y', 'Y'], KeyModifier.NO):
             axis = AxisType.Y
 
         step = self.step * event.step
