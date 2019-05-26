@@ -2,7 +2,7 @@
 
 import enum
 import collections
-from typing import NamedTuple, Optional, Union, List
+from typing import NamedTuple, Optional, Union, Collection
 
 from mpl_events import MplEventDispatcher, MplObject_Type
 
@@ -93,7 +93,7 @@ class InteractorBase(MplEventDispatcher):
 
         return Key(key=key, modifier=modifiers[modifier])
 
-    def check_key(self, key: Union[str, Key], key_set: List[str],
+    def check_key(self, key: Union[str, Key], key_set: Collection[str],
                   modifier: Optional[KeyModifier] = None):
         """Checks the key for given set of keys and optionally modifier
         """

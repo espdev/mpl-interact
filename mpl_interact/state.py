@@ -6,7 +6,7 @@ from .base import InteractorBase, KeyModifier
 
 class AxesLimitsResetInteractor(InteractorBase):
 
-    keys = ['h', 'home']
+    keys = {'h', 'home'}
 
     def reset_axes_limits(self, axes: mpl.Axes):
         """Resets limits for given axes
