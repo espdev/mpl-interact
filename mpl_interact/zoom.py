@@ -150,13 +150,14 @@ class MouseWheelScrollZoomInteractor(ZoomInteractorBase):
         step = self.step * event.step
         step = -step if self.inversion else step
 
-        axis = AxisType.ALL
         key = self.parse_key(event.key)
 
         if self.check_key(key, self.x_keys, KeyModifier.NO):
             axis = AxisType.X
-        if self.check_key(key, self.y_keys, KeyModifier.NO):
+        elif self.check_key(key, self.y_keys, KeyModifier.NO):
             axis = AxisType.Y
+        else:
+            axis = AxisType.ALL
 
         if self.zoomer.zoom(event, step, axis):
             self.update()
