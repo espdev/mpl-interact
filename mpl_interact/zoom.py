@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+"""
+Module provides interacotors for zooming data on an axes
+
+"""
+
 import abc
 import math
 from typing import Optional
@@ -19,8 +24,8 @@ class AxesZoomable(abc.ABC):
     def end(self, event: mpl.LocationEvent):
         pass
 
-    def zoom(self, event: mpl.LocationEvent, axis: AxisType, step: float) -> bool:
-        """This method should implement zooming
+    def zoom(self, event: mpl.LocationEvent, step: float, axis: AxisType = AxisType.ALL) -> bool:
+        """This method should implement zoom functionality
         """
         pass
 
@@ -38,7 +43,7 @@ class MouseAnchorAxesZoomer(AxesZoomable):
     def end(self, event: mpl.LocationEvent):
         pass
 
-    def zoom(self, event: mpl.LocationEvent, axis: AxisType, step: float) -> bool:
+    def zoom(self, event: mpl.LocationEvent, step: float, axis: AxisType = AxisType.ALL) -> bool:
         axes: mpl.Axes = event.inaxes
 
         if not axes or not axes.in_axes(event) or not axes.can_zoom():
@@ -93,7 +98,7 @@ class MouseAnchorAxesZoomer(AxesZoomable):
 
 
 class ZoomInteractorBase(InteractorBase):
-    """The base interactor for zooming data on axes
+    """The base interactor for zooming data on an axes
     """
 
     def __init__(self, mpl_obj: MplObject_Type, zoomer: Optional[AxesZoomable] = None):
@@ -126,7 +131,7 @@ class WheelScrollZoomInteractor(ZoomInteractorBase):
     """
 
     def __init__(self, mpl_obj: MplObject_Type, zoomer: Optional[AxesZoomable] = None):
-        super().__init__(mpl_obj)
+        super().__init__(mpl_obj, zoomer)
 
         self._inversion = True
 
@@ -139,6 +144,9 @@ class WheelScrollZoomInteractor(ZoomInteractorBase):
         self._inversion = value
 
     def on_mouse_wheel_scroll(self, event: mpl.MouseEvent):
+        step = self.step * event.step
+        step = -step if self.inversion else step
+
         axis = AxisType.ALL
         key = self.parse_key(event.key)
 
@@ -147,10 +155,7 @@ class WheelScrollZoomInteractor(ZoomInteractorBase):
         if self.check_key(key, ['y', 'Y'], KeyModifier.NO):
             axis = AxisType.Y
 
-        step = self.step * event.step
-        step = -step if self.inversion else step
-
-        if self.zoomer.zoom(event, axis, step):
+        if self.zoomer.zoom(event, step, axis):
             self.update()
 
 
@@ -185,5 +190,5 @@ class KeyZoomInteractor(ZoomInteractorBase):
         elif key.modifier == self.y_modifier:
             axis = AxisType.Y
 
-        if self.zoomer.zoom(event, axis, step):
+        if self.zoomer.zoom(event, step, axis):
             self.update()
