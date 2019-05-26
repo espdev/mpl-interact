@@ -22,7 +22,7 @@ class AxesDraggable(abc.ABC):
         pass
 
 
-class AxesMousePanDragger(AxesDraggable):
+class MousePanAxesDragger(AxesDraggable):
     """Axes dragging pan-based implementation
     """
 
@@ -58,7 +58,7 @@ class MouseDragInteractor(InteractorBase):
         self._button = MouseButton.LEFT
 
         if not dragger:
-            dragger = AxesMousePanDragger()
+            dragger = MousePanAxesDragger()
         self._dragger = dragger
 
     @property
