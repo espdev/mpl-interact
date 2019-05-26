@@ -48,7 +48,7 @@ class AxesMousePanDragger(AxesDraggable):
         return False
 
 
-class DragInteractor(InteractorBase):
+class MouseDragInteractor(InteractorBase):
     """Drags data on axes by mouse
     """
 
