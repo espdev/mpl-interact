@@ -28,7 +28,7 @@ setup(
     version=_get_version(),
     python_requires=PYTHON_REQUIRES,
     install_requires=[
-        'matplotlib >= 2.0, < 3.1',
+        'matplotlib >=2.0,<3.2',
         'mpl-events >= 0.0.5'
     ],
     packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
