@@ -12,12 +12,15 @@ class AxesDraggable(abc.ABC):
     """Axes draggable interface
     """
 
+    @abc.abstractmethod
     def begin(self, event: mpl.LocationEvent):
         pass
 
+    @abc.abstractmethod
     def end(self, event: mpl.LocationEvent):
         pass
 
+    @abc.abstractmethod
     def drag(self, event: mpl.LocationEvent) -> bool:
         pass
 

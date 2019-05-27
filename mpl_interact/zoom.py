@@ -18,12 +18,15 @@ class AxesZoomable(abc.ABC):
     """Axes zoomable interface
     """
 
+    @abc.abstractmethod
     def begin(self, event: mpl.LocationEvent):
         pass
 
+    @abc.abstractmethod
     def end(self, event: mpl.LocationEvent):
         pass
 
+    @abc.abstractmethod
     def zoom(self, event: mpl.LocationEvent, step: float, axis: AxisType = AxisType.ALL) -> bool:
         """This method should implement zoom functionality
         """
