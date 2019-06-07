@@ -11,7 +11,7 @@ from .drag import MouseDragInteractor
 from .state import AxesLimitsResetInteractor
 
 
-def interact(figure: Optional[Figure] = None,
+def interact(figure: Optional[Figure] = None, *,
              zoom: bool = True,
              drag: bool = True,
              reset: bool = True) -> Dict[str, InteractorBase]:
