@@ -6,12 +6,12 @@ Module provides interacotors for zooming data on an axes
 """
 
 import abc
-import math
 from typing import Optional
 
 from mpl_events import mpl, MplObject_Type
 
 from .base import InteractorBase, AxisType, KeyModifier
+from .utils import scale_to_log, scale_from_log
 
 
 class AxesZoomable(abc.ABC):
@@ -75,11 +75,11 @@ class MouseAnchorAxesZoomer(AxesZoomable):
         return True
 
     @staticmethod
-    def _recalc_axis_limits(lim_min, lim_max, anchor, zoom_step, is_log):
-        if is_log:
-            lim_min = math.log10(lim_min)
-            lim_max = math.log10(lim_max)
-            anchor = math.log10(anchor)
+    def _recalc_axis_limits(lim_min, lim_max, anchor, zoom_step, is_log_scale):
+        if is_log_scale:
+            lim_min = scale_to_log(lim_min)
+            lim_max = scale_to_log(lim_max)
+            anchor = scale_to_log(anchor)
 
         anchor = lim_min if anchor < lim_min else anchor
         anchor = lim_max if anchor > lim_max else anchor
@@ -93,9 +93,9 @@ class MouseAnchorAxesZoomer(AxesZoomable):
         if lim_min > lim_max:
             lim_min, lim_max = lim_max, lim_min
 
-        if is_log:
-            lim_min = pow(10.0, lim_min)
-            lim_max = pow(10.0, lim_max)
+        if is_log_scale:
+            lim_min = scale_from_log(lim_min)
+            lim_max = scale_from_log(lim_max)
 
         return lim_min, lim_max
 
