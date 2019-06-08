@@ -29,7 +29,7 @@ setup(
     python_requires=PYTHON_REQUIRES,
     install_requires=[
         'matplotlib >=2.0,<3.2',
-        'mpl-events >=0.0.5,<0.1.0'
+        'mpl-events >=0.0.5,<0.2.0'
     ],
     packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
     url='https://github.com/espdev/mpl-interact',
