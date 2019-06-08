@@ -40,7 +40,7 @@ setup(
     long_description=_get_long_description(),
     long_description_content_type='text/markdown',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Visualization',
