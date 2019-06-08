@@ -1,6 +1,13 @@
 # mpl-interact
 
+[![PyPI version](https://img.shields.io/pypi/v/mpl-interact.svg)](https://pypi.python.org/pypi/mpl-interact)
+[![Build status](https://travis-ci.org/espdev/mpl-interact.svg?branch=master)](https://travis-ci.org/espdev/mpl-interact)
+[![Docs status](https://readthedocs.org/projects/mpl-interact/badge/)](https://mpl-interact.readthedocs.io/en/latest/)
+[![License](https://img.shields.io/pypi/l/mpl-interact.svg)](LICENSE)
+
 A library encompassing smart interactions missing in matplotlib
+
+**UNDER DEVELOPMENT**
 
 ## Usage
 
