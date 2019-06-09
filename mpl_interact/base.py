@@ -67,7 +67,7 @@ class InteractorBase(MplEventDispatcher):
     def update(self):
         """Updates and redraw canvas
         """
-        self.figure.canvas.draw()
+        self.figure.canvas.draw_idle()
 
     @staticmethod
     def parse_key(key: str) -> Key:
