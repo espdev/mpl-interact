@@ -8,10 +8,11 @@ Module provides interacotors for zooming data on an axes
 import abc
 from typing import Optional
 
+from matplotlib.transforms import IdentityTransform
+
 from mpl_events import mpl, MplObject_Type
 
 from .base import InteractorBase, AxisType, KeyModifier
-from .utils import scale_to_log, scale_from_log
 
 
 class AxesZoomable(abc.ABC):
@@ -52,22 +53,22 @@ class MouseAnchorAxesZoomer(AxesZoomable):
         if not axes or not axes.in_axes(event) or not axes.can_zoom():
             return False
 
-        anchor_x = event.xdata
-        anchor_y = event.ydata
+        xanchor = event.xdata
+        yanchor = event.ydata
 
         xmin, xmax = axes.get_xlim()
         ymin, ymax = axes.get_ylim()
 
-        is_xlog = axes.get_xscale() == 'log'
-        is_ylog = axes.get_yscale() == 'log'
+        xtransform = axes.xaxis.get_transform()
+        ytransform = axes.yaxis.get_transform()
 
         if axis == AxisType.X:
-            xmin, xmax = self._recalc_axis_limits(xmin, xmax, anchor_x, step, is_xlog)
+            xmin, xmax = self._recalc_axis_limits(ymin, ymax, xanchor, step, xtransform)
         elif axis == AxisType.Y:
-            ymin, ymax = self._recalc_axis_limits(ymin, ymax, anchor_y, step, is_ylog)
+            ymin, ymax = self._recalc_axis_limits(ymin, ymax, yanchor, step, ytransform)
         elif axis == AxisType.ALL:
-            xmin, xmax = self._recalc_axis_limits(xmin, xmax, anchor_x, step, is_xlog)
-            ymin, ymax = self._recalc_axis_limits(ymin, ymax, anchor_y, step, is_ylog)
+            xmin, xmax = self._recalc_axis_limits(xmin, xmax, xanchor, step, xtransform)
+            ymin, ymax = self._recalc_axis_limits(ymin, ymax, yanchor, step, ytransform)
 
         axes.set_xlim(xmin, xmax)
         axes.set_ylim(ymin, ymax)
@@ -75,11 +76,9 @@ class MouseAnchorAxesZoomer(AxesZoomable):
         return True
 
     @staticmethod
-    def _recalc_axis_limits(lim_min, lim_max, anchor, zoom_step, is_log_scale):
-        if is_log_scale:
-            lim_min = scale_to_log(lim_min)
-            lim_max = scale_to_log(lim_max)
-            anchor = scale_to_log(anchor)
+    def _recalc_axis_limits(lim_min, lim_max, anchor, zoom_step, transform):
+        if not isinstance(transform, IdentityTransform):
+            lim_min, lim_max, anchor = transform.transform([lim_min, lim_max, anchor]).tolist()
 
         anchor = lim_min if anchor < lim_min else anchor
         anchor = lim_max if anchor > lim_max else anchor
@@ -93,9 +92,8 @@ class MouseAnchorAxesZoomer(AxesZoomable):
         if lim_min > lim_max:
             lim_min, lim_max = lim_max, lim_min
 
-        if is_log_scale:
-            lim_min = scale_from_log(lim_min)
-            lim_max = scale_from_log(lim_max)
+        if not isinstance(transform, IdentityTransform):
+            lim_min, lim_max = transform.inverted().transform([lim_min, lim_max]).tolist()
 
         return lim_min, lim_max
 
