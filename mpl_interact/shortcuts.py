@@ -16,6 +16,12 @@ def interact(figure: Optional[Figure] = None, *,
              drag: bool = True,
              reset: bool = True) -> Dict[str, InteractorBase]:
     """Enables interactors for the figure
+
+    Interactions:
+
+    * zoom
+    * drag
+    * reset axes
     """
     if not figure:
         figure = plt.gcf()
