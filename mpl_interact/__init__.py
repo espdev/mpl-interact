@@ -2,4 +2,4 @@
 
 from .__version__ import __version__  # noqa
 
-from .shortcuts import interact
+from .shortcuts import interact, Actions

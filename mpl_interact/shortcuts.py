@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import enum
 from typing import Optional, Dict
 
 from matplotlib import pyplot as plt
@@ -11,13 +12,22 @@ from .drag import MouseDragInteractor
 from .state import AxesLimitsResetInteractor
 
 
-def interact(figure: Optional[Figure] = None, *,
-             zoom: bool = True,
-             drag: bool = True,
-             reset: bool = True) -> Dict[str, InteractorBase]:
+class Actions(enum.Flag):
+    """Interaction action flags
+    """
+
+    ZOOM = enum.auto()
+    DRAG = enum.auto()
+    RESET = enum.auto()
+
+    ALL = ZOOM | DRAG | RESET
+
+
+def interact(figure: Optional[Figure] = None,
+             actions: Actions = Actions.ALL) -> Dict[Actions, InteractorBase]:
     """Enables interactors for the figure
 
-    Interactions:
+    Supports interaction actions:
 
     * zoom
     * drag
@@ -36,11 +46,11 @@ def interact(figure: Optional[Figure] = None, *,
 
     interactors = interact.interactors.setdefault(figure, {})
 
-    if zoom:
-        interactors['zoom'] = MouseWheelScrollZoomInteractor(figure)
-    if drag:
-        interactors['drag'] = MouseDragInteractor(figure)
-    if reset:
-        interactors['reset'] = AxesLimitsResetInteractor(figure)
+    if Actions.ZOOM in actions:
+        interactors[Actions.ZOOM] = MouseWheelScrollZoomInteractor(figure)
+    if Actions.DRAG in actions:
+        interactors[Actions.DRAG] = MouseDragInteractor(figure)
+    if Actions.RESET in actions:
+        interactors[Actions.RESET] = AxesLimitsResetInteractor(figure)
 
     return interactors
